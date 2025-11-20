@@ -12,6 +12,7 @@ import {
   usePokemonDetails,
 } from "./shared/hooks/tanstackQueries";
 import { NotFoundScreen } from "./components/common/NotFound";
+import { API_URL } from "./shared/constants/constants";
 
 function App() {
   const [type, setType] = useState<string>("");
@@ -46,7 +47,7 @@ function App() {
     return [
       {
         name: pokemonDetails.name,
-        url: `https://pokeapi.co/api/v2/pokemon/${pokemonDetails.id}/`,
+        url: `${API_URL}/pokemon/${pokemonDetails.id}/`,
       },
     ];
   }, [pokemonDetails]);

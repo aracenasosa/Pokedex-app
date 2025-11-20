@@ -38,6 +38,9 @@ cd react-app-test
 # Install dependencies
 npm install
 
+# Create .env file with:
+# VITE_POKEAPI_BASE_URL=https://pokeapi.co/api/v2
+
 # Start development server
 npm run dev
 
