@@ -79,11 +79,20 @@ export const useInfiniteTypePokemons = (typeKey: string) => {
   });
 };
 
-export const usePokemonDetails = (id: number) => {
+export const usePokemonDetails = (pokemon: string | number) => {
+  const normalizedValue =
+    typeof pokemon === "number"
+      ? pokemon > 0
+        ? String(pokemon)
+        : ""
+      : pokemon?.toString().trim().toLowerCase() ?? "";
+
+  const shouldFetch = normalizedValue.length > 0;
+
   return useQuery<IPokemonDetails, ApiError>({
-    queryKey: ["pokemonDetail", String(id).toLowerCase()],
-    queryFn: () => getPokemonDetails(id),
-    enabled: !!id,          // only run if a name or id is provided
+    queryKey: ["pokemonDetail", normalizedValue],
+    queryFn: () => getPokemonDetails(normalizedValue || pokemon),
+    enabled: shouldFetch,          // only run if a name or id is provided
     staleTime: 60_000,           // keep fresh for 1 minute
     gcTime: 5 * 60_000 as any,   // if you’re on v4, rename to cacheTime
     retry: (count, err) => (err as ApiError).status !== 404 && count < 2,

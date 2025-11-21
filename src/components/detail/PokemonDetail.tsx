@@ -1,5 +1,5 @@
 // components/detail/PokemonDetail.tsx
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import {
   usePokemonDetails,
   usePokemonEvolutionChain,
@@ -27,6 +27,7 @@ import "./PokemonDetail.scss";
 
 export default function PokemonDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const numericId = Number(id ?? 0);
 
@@ -42,6 +43,22 @@ export default function PokemonDetail() {
   const {
     data: evolution,
   } = usePokemonEvolutionChain(getIdFromUrl(species?.evolution_chain?.url ?? "0"));
+
+  // Navigation handlers
+  const handlePrevious = () => {
+    if (numericId > 1) {
+      navigate(`/pokemon/${numericId - 1}`);
+    }
+  };
+
+  const handleNext = () => {
+    if (numericId < 10303) {
+      navigate(`/pokemon/${numericId + 1}`);
+    }
+  };
+
+  const isFirst = numericId <= 1;
+  const isLast = numericId >= 10303;
 
   if (isError || isErrorSpecies) {
     const err = (error as ApiError) ?? (errorSpecies as ApiError);
@@ -95,22 +112,28 @@ export default function PokemonDetail() {
         </h1>
       </div>
 
-      {/* Navigation arrows on far left and right edges */}
-      <button className={`container__detail-nav prev ${data?.id === 1 && 'disabled'}`} aria-label="Previous">
-        <Link to={`/pokemon/${(data?.id ?? 1) - 1}`}>
-          <img src={leftIcon} alt="previous" />
-        </Link>
-      </button>
-
-      <button className={`container__detail-nav next ${data?.id === 10303 && 'disabled'}`} aria-label="Next">
-        <Link to={`/pokemon/${(data?.id ?? 1) + 1}`}>
-          <img src={rightIcon} alt="next" />
-        </Link>
-      </button>
-
       {/* ONE sprite, centered and overlapping */}
       <div className="container__detail-sprite">
+        {/* Navigation arrows on either side of the sprite */}
+        <button
+          className={`container__detail-nav prev ${isFirst ? 'disabled' : ''}`}
+          aria-label="Previous"
+          onClick={handlePrevious}
+          disabled={isFirst}
+        >
+          <img src={leftIcon} alt="previous" />
+        </button>
+
         <img src={mainImg} alt="pokemon" />
+
+        <button
+          className={`container__detail-nav next ${isLast ? 'disabled' : ''}`}
+          aria-label="Next"
+          onClick={handleNext}
+          disabled={isLast}
+        >
+          <img src={rightIcon} alt="next" />
+        </button>
       </div>
 
       {/* Auto-height, centered details card */}

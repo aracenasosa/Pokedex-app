@@ -15,7 +15,7 @@ type PokemonProps = {
 const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
   const part = pokemon.url.split("/");
   const id = parseInt(part[part.length - 2], 10); // make sure it's a number
-
+  const [imageError, setImageError] = React.useState(false);
 
   const imgPokemon = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 
@@ -28,6 +28,8 @@ const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
       queryFn: () => getPokemonDetails(id),
       staleTime: 5 * 60 * 1000, // cache 5 min
   });
+
+  const fallbackImg = "/pokemon-not-found.png";
 
   return (
     <Link to={`/pokemon/${id}`}
@@ -45,7 +47,7 @@ const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
           className="container__main-list-card-overlay"
         />
         <div className="container__main-list-card-img">
-          <img src={imgPokemon} alt={pokemon.name} />
+          <img src={imageError ? fallbackImg : imgPokemon} alt={pokemon.name}  onError={() => setImageError(true)}/>
         </div>
         <div className="container__main-list-card-footer">
           <div className="container__main-list-card-footer-main">

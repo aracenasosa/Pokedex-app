@@ -1,7 +1,13 @@
 // components/common/NotFound.tsx
 import React from 'react';
 
-export const NotFoundScreen: React.FC<{ id:number|string, message:string }> = ({ id, message }) => {
+type NotFoundProps = {
+  id: number | string;
+  message?: string;
+};
+
+export const NotFoundScreen: React.FC<NotFoundProps> = ({ id, message }) => {
+  const fallbackMessage = `The Pokémon with id "${id ?? 'unknown'}" doesn't exist.`;
   return (
     <div className="notfound">
       <img
@@ -10,7 +16,7 @@ export const NotFoundScreen: React.FC<{ id:number|string, message:string }> = ({
         className="notfound__image"
       />
       <h2>Pokémon not found</h2>
-      <p>{message ?? `The Pokémon with id "${id ?? 'unknown'}" doesn't exist.`}</p>
+      <p>{message ?? fallbackMessage}</p>
     </div>
   );
 };

@@ -4,8 +4,9 @@ import Header from "./components/list/Header";
 import Filters from "./components/list/Filters";
 import PokemonList from "./components/list/PokemonList";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { InfiniteData } from "@tanstack/react-query";
 
-import type { PokemonResults } from "./models/pokemon.model";
+import type { IPokemon, PokemonResults } from "./models/pokemon.model";
 import {
   useInfiniteAllPokemons,
   useInfiniteTypePokemons,
@@ -25,9 +26,11 @@ function App() {
   const allQ = useInfiniteAllPokemons();
   const typeQ = useInfiniteTypePokemons(typeKey);
   const active = hasType ? typeQ : allQ;
+  const activeData = hasType ? typeQ.data : allQ.data;
 
   // Flatten pages into a single IPokemon-like object for PokemonList
-  const pages = active.data?.pages ?? [];
+  const pages =
+    (activeData as InfiniteData<IPokemon> | undefined)?.pages ?? [];
   const flatResults = pages.flatMap((p: any) => p.results);
   const totalResults = pages[0]?.count ?? 0;
 

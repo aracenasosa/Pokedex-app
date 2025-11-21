@@ -103,10 +103,13 @@
       top: 1rem;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 5rem;
       font-weight: 800;
       z-index: -10;
       color: $transparent-gray;
+      line-height: 1;
+      white-space: nowrap;
+      font-size: clamp(2.5rem, 3.1vw, 5rem);
+
 
       @media (max-width: 480px) {
         font-size: 3.5rem;
