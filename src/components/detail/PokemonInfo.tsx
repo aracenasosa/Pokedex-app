@@ -2,7 +2,6 @@ import React from 'react'
 import type { IPokemonDetails, IPokemonSpecies, PokemonAbility } from '../../models/pokemon.model'
 import heighIcon from "../../assets/height.svg";
 import weightIcon from "../../assets/weight.svg";
-import HabitatIcon from "../../assets/habitat.svg";
 
 interface IPokemonInfoProps {
     data: IPokemonDetails,
@@ -28,23 +27,17 @@ const PokemonInfo: React.FC<IPokemonInfoProps> = ({ data, species }) => {
                 </div>
                 <p>Height</p>
             </div>
-            <div className="container__detail-card-info-first-container">
-                <div className="container__detail-card-info-first-container-move">
-                    {data?.abilities.map((ab: PokemonAbility) => (
-                        <span key={ab.ability.url}>{ab.ability.name}</span>
-                    ))}
+            {/* Only show Moves if species data is available */}
+            {species && (
+                <div className="container__detail-card-info-first-container">
+                    <div className="container__detail-card-info-first-container-move">
+                        {data?.abilities.map((ab: PokemonAbility) => (
+                            <span key={ab.ability.url}>{ab.ability.name}</span>
+                        ))}
+                    </div>
+                    <p>Moves</p>
                 </div>
-                <p>Moves</p>
-            </div>
-            {species?.habitat && (<div className="container__detail-card-info-first-container">
-                <div>
-                    <>
-                        <img src={HabitatIcon} alt="Habitat Icon Img" />
-                        <span>{species?.habitat?.name}</span>
-                    </>
-                </div>
-                <p>Habitat</p>
-            </div>)}
+            )}
         </div>
     )
 }

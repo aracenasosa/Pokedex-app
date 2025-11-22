@@ -34,6 +34,9 @@ function App() {
   const flatResults = pages.flatMap((p: any) => p.results);
   const totalResults = pages[0]?.count ?? 0;
 
+  // Check if we're in initial loading state (no data yet)
+  const isInitialLoading = active.isPending && flatResults.length === 0;
+
   // ---------------- Search (kept as you had it) ----------------
   const {
     data: pokemonDetails,
@@ -123,6 +126,7 @@ function App() {
           setSearch={setSearch}
           resultsCount={resultsCount}
           totalResults={totalResults}
+          isLoading={isInitialLoading}
         />
 
         {searching ? (
@@ -151,6 +155,7 @@ function App() {
                 previous: "",
                 results: flatResults,
               }}
+              loadingMore={isInitialLoading}
             />
 
             <div

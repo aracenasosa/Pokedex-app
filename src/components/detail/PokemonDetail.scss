@@ -214,7 +214,7 @@ $type-colors: (
 
     &.prev {
       left: max(16px, calc(50% - clamp(160px, 22vmin, 240px) / 2 - 48px));
-      
+
       @media (max-width: 1024px) {
         left: max(16px, calc(50% - clamp(160px, 22vmin, 240px) / 2 - 44px));
       }
@@ -238,7 +238,7 @@ $type-colors: (
 
     &.next {
       right: max(16px, calc(50% - clamp(160px, 22vmin, 240px) / 2 - 48px));
-      
+
       @media (max-width: 1024px) {
         right: max(16px, calc(50% - clamp(160px, 22vmin, 240px) / 2 - 44px));
       }
@@ -824,16 +824,16 @@ $type-colors: (
             background-color: #999;
             border-radius: 6px;
           }
-        }
 
-        /* color the per-stat label by type */
-        @each $name, $color in $type-colors {
-          &.#{$name}-type {
-            @include type-progress($color);
+          /* color the per-stat label by type */
+          @each $name, $color in $type-colors {
+            &.#{$name}-type {
+              @include type-progress($color);
 
-            .stat-name {
-              color: $color !important;
-              font-weight: 700;
+              .stat-name {
+                color: $color !important;
+                font-weight: 700;
+              }
             }
           }
         }
@@ -1070,3 +1070,356 @@ $type-colors: (
   }
 }
 
+// ===================================
+// NEW SECTIONS STYLING
+// ===================================
+
+// Type Effectiveness Section
+.container__detail-card-info-effectiveness {
+  margin-bottom: 50px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+    padding: 0 16px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 32px;
+    padding: 0 12px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #000;
+
+    @media (max-width: 768px) {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .effectiveness-section {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 480px) {
+      margin-bottom: 20px;
+    }
+  }
+
+  .effectiveness-label {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    &.weak {
+      color: #d32f2f;
+    }
+
+    &.resistant {
+      color: #388e3c;
+    }
+
+    &.immune {
+      color: #757575;
+    }
+  }
+
+  .effectiveness-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+
+    @media (max-width: 480px) {
+      gap: 8px;
+    }
+  }
+
+  .effectiveness-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+
+    @media (max-width: 480px) {
+      padding: 5px 10px;
+      font-size: 12px;
+      gap: 5px;
+    }
+
+    .type-name {
+      text-transform: capitalize;
+    }
+
+    .multiplier {
+      font-size: 11px;
+      opacity: 0.9;
+      font-weight: 700;
+
+      @media (max-width: 480px) {
+        font-size: 10px;
+      }
+    }
+
+    // Type colors for badges
+    @each $name, $color in $type-colors {
+      &.#{$name} {
+        background-color: $color;
+
+        @if $name =="normal" or $name =="electric" or $name =="grass" or $name =="ice" or $name =="ground" or $name =="bug" or $name =="rock" or $name =="steel" {
+          color: #000;
+        }
+      }
+    }
+  }
+}
+
+// Breeding & Training Section
+.container__detail-card-info-breeding {
+  margin-bottom: 50px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+    padding: 0 16px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 32px;
+    padding: 0 12px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #000;
+
+    @media (max-width: 768px) {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .breeding-training-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+
+    @media (max-width: 768px) {
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+  }
+
+  .breeding-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+
+    @media (max-width: 480px) {
+      padding: 14px;
+      gap: 6px;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      @media (max-width: 480px) {
+        font-size: 12px;
+      }
+    }
+
+    .value {
+      font-size: 15px;
+      font-weight: 500;
+      color: #000;
+
+      @media (max-width: 480px) {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Additional Info Section
+.container__detail-card-info-additional {
+  margin-bottom: 50px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+    padding: 0 16px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 32px;
+    padding: 0 12px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #000;
+
+    @media (max-width: 768px) {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .additional-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+
+    @media (max-width: 768px) {
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+  }
+
+  .additional-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+
+    @media (max-width: 480px) {
+      padding: 14px;
+      gap: 6px;
+    }
+
+    &.special {
+      grid-column: 1 / -1;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      @media (max-width: 480px) {
+        font-size: 12px;
+      }
+    }
+
+    .value {
+      font-size: 15px;
+      font-weight: 500;
+      color: #000;
+
+      @media (max-width: 480px) {
+        font-size: 14px;
+      }
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .classification-badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      @media (max-width: 480px) {
+        padding: 5px 10px;
+        font-size: 11px;
+      }
+
+      &.legendary {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+      }
+
+      &.mythical {
+        background: linear-gradient(135deg, #9C27B0 0%, #E91E63 100%);
+        box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+      }
+
+      &.baby {
+        background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+        box-shadow: 0 2px 8px rgba(255, 105, 180, 0.3);
+      }
+    }
+  }
+}

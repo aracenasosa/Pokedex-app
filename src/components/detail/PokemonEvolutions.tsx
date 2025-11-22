@@ -9,7 +9,7 @@ interface IPokemonEvolutionProps {
 const PokemonEvolutions: React.FC<IPokemonEvolutionProps> = ({ evolutionChain }) => {
     return (
         <>
-            {evolutionChain && (
+            {evolutionChain && evolutionChain.length > 0 && (
                 <div className="container__detail-card-info-four">
                     <h2>Evolutions</h2>
 

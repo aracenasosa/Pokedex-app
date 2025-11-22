@@ -40,14 +40,34 @@ const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
       state={{ preview: { id, name: pokemon.name } }}
     >
       <div className="container__main-list-card">
-        <CountUp
-          start={0}
-          end={id}
-          formattingFn={(n) => `#${n.toString().padStart(3, '0')}`}
-          className="container__main-list-card-overlay"
-        />
+        {isPending ? (
+          <Skeleton 
+            width={150} 
+            height={60} 
+            className="container__main-list-card-overlay"
+            style={{ 
+              position: 'absolute',
+              top: '1rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: -10,
+              opacity: 0.3
+            }}
+          />
+        ) : (
+          <CountUp
+            start={0}
+            end={id}
+            formattingFn={(n) => `#${n.toString().padStart(3, '0')}`}
+            className="container__main-list-card-overlay"
+          />
+        )}
         <div className="container__main-list-card-img">
-          <img src={imageError ? fallbackImg : imgPokemon} alt={pokemon.name}  onError={() => setImageError(true)}/>
+          {isPending ? (
+            <Skeleton width={120} height={120} circle />
+          ) : (
+            <img src={imageError ? fallbackImg : imgPokemon} alt={pokemon.name}  onError={() => setImageError(true)}/>
+          )}
         </div>
         <div className="container__main-list-card-footer">
           <div className="container__main-list-card-footer-main">

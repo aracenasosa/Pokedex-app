@@ -13,16 +13,21 @@
   box-sizing: border-box;
 
   // Prevent grid items from overflowing
-  > * {
+  >* {
     min-width: 0;
     max-width: 100%;
   }
 
   // Responsive grid columns
   @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 20px;
+  }
+
+  // Very small devices - cards take full width (1 column)
+  @media (max-width: 360px) {
+    grid-template-columns: 1fr;
   }
 
   @media (min-width: 481px) and (max-width: 640px) {
@@ -81,6 +86,11 @@
       font-size: 1rem;
     }
 
+    // Very small devices - cards take full width
+    @media (max-width: 360px) {
+      max-width: 100%;
+    }
+
     @media (min-width: 481px) and (max-width: 640px) {
       padding: 18px;
       font-size: 1.1rem;
@@ -108,20 +118,35 @@
       color: $transparent-gray;
       line-height: 1;
       white-space: nowrap;
-      font-size: clamp(2.5rem, 3.1vw, 5rem);
-
+      max-width: calc(100% - 40px); // Prevent touching edges
+      overflow: hidden;
+      text-overflow: clip;
+      font-size: clamp(2rem, 8vw, 5rem); // More responsive scaling
 
       @media (max-width: 480px) {
-        font-size: 3.5rem;
+        font-size: clamp(1.8rem, 10vw, 3.5rem);
         top: 0.75rem;
+        max-width: calc(100% - 32px);
       }
 
       @media (min-width: 481px) and (max-width: 640px) {
-        font-size: 4rem;
+        font-size: clamp(2.2rem, 9vw, 4rem);
+        max-width: calc(100% - 36px);
       }
 
       @media (min-width: 641px) and (max-width: 768px) {
-        font-size: 4.5rem;
+        font-size: clamp(2.5rem, 8vw, 4.5rem);
+        max-width: calc(100% - 36px);
+      }
+
+      @media (min-width: 769px) and (max-width: 1024px) {
+        font-size: clamp(2.5rem, 6vw, 5rem);
+        max-width: calc(100% - 40px);
+      }
+
+      @media (min-width: 1025px) {
+        font-size: clamp(2.5rem, 5vw, 5rem);
+        max-width: calc(100% - 40px);
       }
     }
 
@@ -381,9 +406,9 @@
           }
 
           @media (max-width: 360px) {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 6px;
+            width: auto;
+            align-self: center;
+            justify-content: center;
           }
         }
       }
@@ -619,20 +644,16 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       padding-bottom: 4px;
-      mask-image: linear-gradient(
-        to right,
-        transparent 0,
-        rgba(0, 0, 0, 0.7) 24px,
-        rgba(0, 0, 0, 0.7) calc(100% - 24px),
-        transparent 100%
-      );
-      -webkit-mask-image: linear-gradient(
-        to right,
-        transparent 0,
-        rgba(0, 0, 0, 0.7) 24px,
-        rgba(0, 0, 0, 0.7) calc(100% - 24px),
-        transparent 100%
-      );
+      mask-image: linear-gradient(to right,
+          transparent 0,
+          rgba(0, 0, 0, 0.7) 24px,
+          rgba(0, 0, 0, 0.7) calc(100% - 24px),
+          transparent 100%);
+      -webkit-mask-image: linear-gradient(to right,
+          transparent 0,
+          rgba(0, 0, 0, 0.7) 24px,
+          rgba(0, 0, 0, 0.7) calc(100% - 24px),
+          transparent 100%);
     }
 
     &-btn {
@@ -840,4 +861,3 @@
     }
   }
 }
-

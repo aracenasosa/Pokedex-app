@@ -33,7 +33,7 @@ A modern, responsive Pokédex web application built with React and TypeScript. B
 ```bash
 # Clone repository
 git clone <repository-url>
-cd react-app-test
+cd pokedex-app
 
 # Install dependencies
 npm install

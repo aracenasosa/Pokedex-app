@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client'
+import 'react-loading-skeleton/dist/skeleton.css'
 import './index.scss'
 import App from './App.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'

@@ -2,7 +2,7 @@ import React from 'react'
 import type { IPokemonDetails } from '../../models/pokemon.model';
 
 interface IPokemonStatsProps {
-    data: IPokemonDetails
+    data: IPokemonDetails;
 }
 
 const PokemonStats: React.FC<IPokemonStatsProps> = ({ data }) => {

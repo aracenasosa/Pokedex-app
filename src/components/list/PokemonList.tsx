@@ -1,9 +1,8 @@
-// components/list/PokemonList.tsx
 import React from "react";
 import type { IPokemon } from "../../models/pokemon.model";
 import PokemonCard from "./PokemonCard";
-import Skeleton from "react-loading-skeleton";
 import "./PokemonList.scss";
+import { SkeletonPokemonCard } from "../common/skeletons";
 
 type PokemonListProps = {
   pokemonsList: IPokemon;
@@ -25,31 +24,10 @@ const PokemonList: React.FC<PokemonListProps> = ({
       {/* Bottom placeholders: keep the grid shape stable while fetching */}
       {loadingMore &&
         Array.from({ length: placeholderCount }).map((_, i) => (
-          <div key={`ph-${i}`} className="container__main-list-card">
-            <div className="container__main-list-card-img">
-              <Skeleton height={96} />
-            </div>
-            <div className="container__main-list-card-footer">
-              <div className="container__main-list-card-footer-main">
-                <Skeleton width={48} />
-                <Skeleton width={90} />
-              </div>
-              <div className="container__main-list-card-footer-secondary">
-                <div className="container__main-list-card-footer-secondary-types">
-                  <Skeleton width={60} height={18} />
-                  <Skeleton width={60} height={18} />
-                </div>
-                <div>
-                  <Skeleton width={50} />
-                  <Skeleton width={50} />
-                </div>
-              </div>
-            </div>
-          </div>
+          <SkeletonPokemonCard key={`ph-${i}`} />
         ))}
     </section>
   );
 };
 
 export default PokemonList;
-

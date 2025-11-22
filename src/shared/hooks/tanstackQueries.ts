@@ -1,11 +1,12 @@
 // shared/hooks/pokemon.ts
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { getPokemons, getPokemonsByType, ApiError, getPokemonDetails, getPokemonSpecies, getPokemonEvolutionChain } from "../../services/pokemon.service";
 import type { IPokemon, IPokemonDetails, IPokemonEvolutionChain, IPokemonSpecies, IPokemonTypes, PokemonResults } from "../../models/pokemon.model";
 
 // page sizes
 const FIRST_PAGE = 60;
-const MORE_PAGE  = 40;
+const MORE_PAGE = 40;
 
 /** -------------------------------
  *  ALL POKEMON (server pagination)
@@ -42,18 +43,22 @@ export const useInfiniteTypePokemons = (typeKey: string) => {
     queryKey: ["pokemonType", typeKey],
     queryFn: () => getPokemonsByType(typeKey),
     enabled: !!typeKey,
-    placeholderData: (prev) => prev,
     staleTime: 60_000,
     gcTime: 5 * 60_000 as any,
   });
 
-  // flatten to PokemonResults[]
-  const all: PokemonResults[] =
-    typeQuery.data?.pokemon.map(({ pokemon }) => pokemon) ?? [];
+  // Use useMemo to ensure 'all' updates correctly when typeQuery.data changes
+  // Only compute when we have successful data for the current typeKey
+  const all: PokemonResults[] = useMemo(() => {
+    if (!typeQuery.data || typeQuery.data.name !== typeKey) {
+      return [];
+    }
+    return typeQuery.data.pokemon.map(({ pokemon }) => pokemon);
+  }, [typeQuery.data, typeKey]);
 
   return useInfiniteQuery<IPokemon, ApiError, IPokemon, [string, string, string], TypePageParam>({
     queryKey: ["pokemons", "type", typeKey],
-    enabled: typeQuery.status === "success",
+    enabled: typeQuery.status === "success" && all.length > 0,
     initialPageParam: { start: 0, size: FIRST_PAGE },
     queryFn: async ({ pageParam }: { pageParam: TypePageParam }) => {
       const { start, size } = pageParam;
@@ -72,7 +77,6 @@ export const useInfiniteTypePokemons = (typeKey: string) => {
       if (loaded >= all.length) return undefined;
       return { start: loaded, size: MORE_PAGE };
     },
-    placeholderData: (prev) => prev,
     staleTime: 60_000,
     gcTime: 5 * 60_000 as any,
     retry: (count, err) => (err as ApiError).status !== 404 && count < 2,
@@ -94,7 +98,7 @@ export const usePokemonDetails = (pokemon: string | number) => {
     queryFn: () => getPokemonDetails(normalizedValue || pokemon),
     enabled: shouldFetch,          // only run if a name or id is provided
     staleTime: 60_000,           // keep fresh for 1 minute
-    gcTime: 5 * 60_000 as any,   // if you’re on v4, rename to cacheTime
+    gcTime: 5 * 60_000 as any,   // if you're on v4, rename to cacheTime
     retry: (count, err) => (err as ApiError).status !== 404 && count < 2,
     placeholderData: (prev) => prev, // keep last details briefly while refetching
   });
@@ -106,7 +110,7 @@ export const usePokemonSpecies = (id: number) => {
     queryFn: () => getPokemonSpecies(id),
     enabled: !!id,          // only run if a name or id is provided
     staleTime: 60_000,           // keep fresh for 1 minute
-    gcTime: 5 * 60_000 as any,   // if you’re on v4, rename to cacheTime
+    gcTime: 5 * 60_000 as any,   // if you're on v4, rename to cacheTime
     retry: (count, err) => (err as ApiError).status !== 404 && count < 2,
     placeholderData: (prev) => prev, // keep last details briefly while refetching
   });
@@ -118,8 +122,19 @@ export const usePokemonEvolutionChain = (id: number) => {
     queryFn: () => getPokemonEvolutionChain(id),
     enabled: !!id,          // only run if a name or id is provided
     staleTime: 60_000,           // keep fresh for 1 minute
-    gcTime: 5 * 60_000 as any,   // if you’re on v4, rename to cacheTime
+    gcTime: 5 * 60_000 as any,   // if you're on v4, rename to cacheTime
     retry: (count, err) => (err as ApiError).status !== 404 && count < 2,
     placeholderData: (prev) => prev, // keep last details briefly while refetching
+  });
+};
+
+export const usePokemonTypeDetails = (typeName: string) => {
+  return useQuery<IPokemonTypes, ApiError>({
+    queryKey: ["pokemonTypeDetails", typeName],
+    queryFn: () => getPokemonsByType(typeName),
+    enabled: !!typeName,
+    staleTime: Infinity,  // Type data never changes
+    gcTime: 60 * 60_000 as any,  // Cache for 1 hour
+    retry: (count, err) => (err as ApiError).status !== 404 && count < 2,
   });
 };

@@ -74,9 +74,8 @@ const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resu
         >
           {TYPES.map(({ key, label }) => {
             const isActive = type === key;
-            const cls = `container__filter-types-btn ${key || "all"} ${
-              isActive ? "is-active" : ""
-            }`;
+            const cls = `container__filter-types-btn ${key || "all"} ${isActive ? "is-active" : ""
+              }`;
             return (
               <button
                 key={key || "all"}

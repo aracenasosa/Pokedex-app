@@ -1,4 +1,5 @@
 // components/detail/PokemonDetail.tsx
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   usePokemonDetails,
@@ -16,10 +17,15 @@ import PokemonTypes from "./PokemonTypes";
 import PokemonInfo from "./PokemonInfo";
 import PokemonStats from "./PokemonStats";
 import PokemonEvolutions from "./PokemonEvolutions";
+import PokemonTypeEffectiveness from "./PokemonTypeEffectiveness";
+import PokemonBreedingTraining, { PokemonBreedingTrainingSkeleton } from "./PokemonBreedingTraining";
+import PokemonAdditionalInfo, { PokemonAdditionalInfoSkeleton } from "./PokemonAdditionalInfo";
 import { NotFoundScreen } from "../common/NotFound";
 import type { ApiError } from "../../services/pokemon.service";
 import { Link } from "react-router";
 import CountUp from "react-countup";
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import backToHomeIcon from "../../assets/back-to-home.svg";
 import leftIcon from "../../assets/chevron_left.svg";
 import rightIcon from "../../assets/chevron_right.svg";
@@ -28,8 +34,14 @@ import "./PokemonDetail.scss";
 export default function PokemonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [imageError, setImageError] = React.useState(false);
 
   const numericId = Number(id ?? 0);
+
+  // Scroll to top whenever the Pokemon ID changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id]);
 
   const { data, isPending, isError, error } = usePokemonDetails(
     numericId
@@ -38,11 +50,16 @@ export default function PokemonDetail() {
     data: species,
     isPending: isPendingSpecies,
     isError: isErrorSpecies,
-    error: errorSpecies,
   } = usePokemonSpecies(numericId);
+
+  // Compute evolution chain ID (hooks must be called unconditionally)
+  const evolutionChainId = species?.evolution_chain?.url
+    ? getIdFromUrl(species.evolution_chain.url)
+    : 0;
   const {
     data: evolution,
-  } = usePokemonEvolutionChain(getIdFromUrl(species?.evolution_chain?.url ?? "0"));
+    isPending: isPendingEvolution,
+  } = usePokemonEvolutionChain(evolutionChainId);
 
   // Navigation handlers
   const handlePrevious = () => {
@@ -60,8 +77,9 @@ export default function PokemonDetail() {
   const isFirst = numericId <= 1;
   const isLast = numericId >= 10303;
 
-  if (isError || isErrorSpecies) {
-    const err = (error as ApiError) ?? (errorSpecies as ApiError);
+  // Only show not found if pokemon detail request fails (not species)
+  if (isError) {
+    const err = error as ApiError;
     const is404 = err.status === 404;
     return (
       <NotFoundScreen
@@ -71,20 +89,56 @@ export default function PokemonDetail() {
     );
   }
 
-  // Loading state (any pending)
-  if (isPending || isPendingSpecies) {
-    return <p>Loading…</p>; // (replace with your skeleton if you have one)
+  // If we got here and still lack pokemon detail data, treat as not found (defensive)
+  // But show skeleton while loading
+  if (!data && isPending) {
+    // Show skeleton for the entire page while main data loads
+    return (
+      <main className="container__detail">
+        <div className="container__detail-header">
+          <Link to="/" className="container__detail-header-back">
+            <img src={backToHomeIcon} alt="back" />
+          </Link>
+          <h1 className="container__detail-header-title">
+            <Skeleton width={200} height={32} />
+          </h1>
+        </div>
+        <div className="container__detail-sprite">
+          <Skeleton width={300} height={300} circle style={{ margin: '0 auto' }} />
+        </div>
+        <section className="container__detail-card">
+          <div className="container__detail-card-inner">
+            <div className="container__detail-types">
+              <Skeleton width={80} height={32} style={{ borderRadius: '999px', margin: '0 4px' }} />
+              <Skeleton width={80} height={32} style={{ borderRadius: '999px', margin: '0 4px' }} />
+            </div>
+            <section className="container__detail-card-info">
+              <div className="container__detail-card-info-first">
+                <Skeleton count={4} height={60} style={{ marginBottom: '16px' }} />
+              </div>
+              <Skeleton height={100} style={{ marginBottom: '16px' }} />
+              <Skeleton count={7} height={40} style={{ marginBottom: '8px' }} />
+            </section>
+          </div>
+        </section>
+      </main>
+    );
   }
 
-  // If we got here and still lack data, treat as not found (defensive)
-  if (!data || !species) {
+  // If we got here and still lack pokemon detail data, treat as not found (defensive)
+  if (!data) {
     return <NotFoundScreen id={numericId} message="Not found" />;
   }
 
-  const defaultImg: string = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  // Check if species data is available (it's optional)
+  const hasSpecies = !isErrorSpecies && species;
 
-  const mainImg: string =
-    data?.sprites?.other?.dream_world?.front_default ?? defaultImg;
+  const defaultImg: string = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  const fallbackImg = "/pokemon-not-found.png";
+
+  const mainImg: string = imageError
+    ? fallbackImg
+    : (data?.sprites?.other?.dream_world?.front_default ?? defaultImg);
 
   const pokemonTypes = data?.types ? data?.types : [];
   const primaryType = data?.types?.[0]?.type?.name ?? "all";
@@ -102,13 +156,19 @@ export default function PokemonDetail() {
           <img src={backToHomeIcon} alt="back" />
         </Link>
         <h1 className="container__detail-header-title">
-          {data?.name?.charAt(0).toUpperCase() + data?.name?.slice(1)}
-          <CountUp
-            start={0}
-            end={data?.id}
-            formattingFn={(n) => `#${n.toString().padStart(3, '0')}`}
-            className="container__detail-header-title-count"
-          />
+          {isPending ? (
+            <Skeleton width={200} height={32} />
+          ) : (
+            <>
+              {data?.name?.charAt(0).toUpperCase() + data?.name?.slice(1)}
+              <CountUp
+                start={0}
+                end={data?.id}
+                formattingFn={(n) => `#${n.toString().padStart(3, '0')}`}
+                className="container__detail-header-title-count"
+              />
+            </>
+          )}
         </h1>
       </div>
 
@@ -124,7 +184,15 @@ export default function PokemonDetail() {
           <img src={leftIcon} alt="previous" />
         </button>
 
-        <img src={mainImg} alt="pokemon" />
+        {isPending ? (
+          <Skeleton width={300} height={300} circle style={{ margin: '0 auto' }} />
+        ) : (
+          <img
+            src={mainImg}
+            alt="pokemon"
+            onError={() => setImageError(true)}
+          />
+        )}
 
         <button
           className={`container__detail-nav next ${isLast ? 'disabled' : ''}`}
@@ -140,20 +208,79 @@ export default function PokemonDetail() {
       <section className="container__detail-card">
         <div className="container__detail-card-inner">
 
-          <PokemonTypes pokemonTypes={pokemonTypes} />
+          {isPending ? (
+            <div className="container__detail-types">
+              <Skeleton width={80} height={32} style={{ borderRadius: '999px', margin: '0 4px' }} />
+              <Skeleton width={80} height={32} style={{ borderRadius: '999px', margin: '0 4px' }} />
+            </div>
+          ) : (
+            <PokemonTypes pokemonTypes={pokemonTypes} />
+          )}
 
           <section className="container__detail-card-info">
 
-            <PokemonInfo data={data} species={species} />
+            {isPending ? (
+              <div className="container__detail-card-info-first">
+                <Skeleton count={4} height={60} style={{ marginBottom: '16px' }} />
+              </div>
+            ) : (
+              <PokemonInfo data={data} species={hasSpecies ? species : undefined} />
+            )}
 
-            <div className="container__detail-card-info-second">
-              <h2>Pokédex Entry</h2>
-              <p>{englishFlavorText(species)}</p>
-            </div>
+            {/* Only show Pokédex Entry if species data is available */}
+            {isPendingSpecies ? (
+              <div className="container__detail-card-info-second">
+                <Skeleton height={20} width={150} style={{ marginBottom: '8px' }} />
+                <Skeleton count={3} height={16} />
+              </div>
+            ) : hasSpecies && (
+              <div className="container__detail-card-info-second">
+                <h2>Pokédex Entry</h2>
+                <p>{englishFlavorText(species)}</p>
+              </div>
+            )}
 
-            <PokemonStats data={data} />
+            {isPending ? (
+              <div className="container__detail-card-info-third">
+                <Skeleton height={24} width={120} style={{ marginBottom: '16px' }} />
+                <Skeleton count={7} height={40} style={{ marginBottom: '8px' }} />
+              </div>
+            ) : (
+              <PokemonStats data={data} />
+            )}
 
-            <PokemonEvolutions evolutionChain={evolutionChain} />
+            {/* Evolution Section - Moved above Type Effectiveness */}
+            {isPendingEvolution || isPendingSpecies ? (
+              <div className="container__detail-card-info-four">
+                <Skeleton height={24} width={120} style={{ marginBottom: '16px' }} />
+                <div className="container__detail-card-info-four-container">
+                  <Skeleton width={80} height={80} circle style={{ margin: '0 8px' }} />
+                  <Skeleton width={40} height={20} style={{ margin: '0 8px' }} />
+                  <Skeleton width={80} height={80} circle style={{ margin: '0 8px' }} />
+                </div>
+              </div>
+            ) : evolutionChain.length > 0 && (
+              <PokemonEvolutions evolutionChain={evolutionChain} />
+            )}
+
+            {/* Type Effectiveness Section */}
+            {!isPending && pokemonTypes.length > 0 && (
+              <PokemonTypeEffectiveness pokemonTypes={pokemonTypes} />
+            )}
+
+            {/* Breeding & Training Section */}
+            {isPendingSpecies ? (
+              <PokemonBreedingTrainingSkeleton />
+            ) : hasSpecies && (
+              <PokemonBreedingTraining species={species} />
+            )}
+
+            {/* Additional Info Section */}
+            {isPendingSpecies ? (
+              <PokemonAdditionalInfoSkeleton />
+            ) : hasSpecies && (
+              <PokemonAdditionalInfo species={species} />
+            )}
 
           </section>
         </div>
