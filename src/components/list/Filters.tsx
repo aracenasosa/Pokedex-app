@@ -10,6 +10,7 @@ interface FilterProps {
   setSearch: (search: string) => void;
   resultsCount: number;
   totalResults: number;
+  isLoading?: boolean;
 }
 
 const TYPES = [
@@ -36,7 +37,7 @@ const TYPES = [
 
 // ...imports and TYPES unchanged
 
-const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resultsCount, totalResults }) => {
+const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resultsCount, totalResults, isLoading }) => {
   const debouncedSetSearch = useMemo(
     () => debounce((v: string) => setSearch(v), 500),
     [setSearch]
@@ -63,6 +64,7 @@ const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resu
               onChange={onChange}
               aria-label="Search Pokémon by name or number"
               autoComplete="off"
+              disabled={isLoading}
             />
           </div>
         </div>
