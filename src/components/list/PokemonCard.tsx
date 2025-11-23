@@ -27,7 +27,7 @@ const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
       queryKey: ["pokemonDetail", String(id)],
       queryFn: () => getPokemonDetails(id),
       staleTime: 5 * 60 * 1000, // cache 5 min
-  });
+    });
 
   const fallbackImg = "/pokemon-not-found.png";
 
@@ -41,11 +41,11 @@ const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
     >
       <div className="container__main-list-card">
         {isPending ? (
-          <Skeleton 
-            width={150} 
-            height={60} 
+          <Skeleton
+            width={150}
+            height={60}
             className="container__main-list-card-overlay"
-            style={{ 
+            style={{
               position: 'absolute',
               top: '1rem',
               left: '50%',
@@ -59,14 +59,14 @@ const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
             start={0}
             end={id}
             formattingFn={(n) => `#${n.toString().padStart(3, '0')}`}
-            className="container__main-list-card-overlay"
+            className={`container__main-list-card-overlay ${id >= 100 ? 'long-id' : ''}`}
           />
         )}
         <div className="container__main-list-card-img">
           {isPending ? (
             <Skeleton width={120} height={120} circle />
           ) : (
-            <img src={imageError ? fallbackImg : imgPokemon} alt={pokemon.name}  onError={() => setImageError(true)}/>
+            <img src={imageError ? fallbackImg : imgPokemon} alt={pokemon.name} onError={() => setImageError(true)} />
           )}
         </div>
         <div className="container__main-list-card-footer">

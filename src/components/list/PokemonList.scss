@@ -1,4 +1,4 @@
-@use "../../shared/styles/colors.scss" as *;
+@use "../../constants/styles/colors.scss" as *;
 
 .container__main-list {
   display: grid;
@@ -28,6 +28,7 @@
   // Very small devices - cards take full width (1 column)
   @media (max-width: 360px) {
     grid-template-columns: 1fr;
+    padding: 0 16px;
   }
 
   @media (min-width: 481px) and (max-width: 640px) {
@@ -147,6 +148,22 @@
       @media (min-width: 1025px) {
         font-size: clamp(2.5rem, 5vw, 5rem);
         max-width: calc(100% - 40px);
+      }
+
+      &.long-id {
+        font-size: clamp(1.2rem, 3.5vw, 3rem);
+
+        @media (max-width: 480px) {
+          font-size: clamp(1.2rem, 8vw, 2.5rem);
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+          font-size: clamp(1.5rem, 3vw, 2.5rem);
+        }
+
+        @media (min-width: 1025px) {
+          font-size: clamp(1.5rem, 2.5vw, 3rem);
+        }
       }
     }
 
@@ -389,7 +406,7 @@
           }
 
           &-steel {
-            background-color: $steel !important;
+            background-color: $steel;
             color: #000 !important;
           }
 
@@ -702,6 +719,13 @@
       &:focus-visible {
         outline: 2px solid rgba(99, 144, 240, 0.6);
         outline-offset: 2px;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(0.7);
+        pointer-events: none;
       }
 
       /* your type colors (unchanged) */

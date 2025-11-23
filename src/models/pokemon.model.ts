@@ -1,76 +1,62 @@
-export type IPokemon = {
-    count: number,
-    next: string | null; 
-  previous: string | null; 
-    results: PokemonResults[],
+/**
+ * Shared Models
+ */
+export interface NamedAPIResource {
+  name: string;
+  url: string;
 }
 
-export type PokemonResults = {
-    name: string,
-    url: string;
-}
+export type PokemonResults = NamedAPIResource;
 
 export interface LocalizedName {
-  language: PokemonResults;
+  language: NamedAPIResource;
   name: string;
 }
 
-export interface GameIndex {
-  game_index: number;
-  generation: PokemonResults;
+export interface FlavorTextEntry {
+  flavor_text: string;
+  language: NamedAPIResource;
+  version: NamedAPIResource;
 }
 
-// Damage relations (current and past share this shape)
-export interface DamageRelations {
-  double_damage_from: PokemonResults[];
-  double_damage_to: PokemonResults[];
-  half_damage_from: PokemonResults[];
-  half_damage_to: PokemonResults[];
-  no_damage_from: PokemonResults[];
-  no_damage_to: PokemonResults[];
+export interface GenusEntry {
+  genus: string;
+  language: NamedAPIResource;
 }
 
-export interface PastDamageRelation {
-  damage_relations: DamageRelations;
-  generation: PokemonResults;
+export interface PokedexNumber {
+  entry_number: number;
+  pokedex: NamedAPIResource;
 }
 
-export interface TypePokemonEntry {
-  pokemon: PokemonResults;
-  slot: number;
+export interface PokemonVariety {
+  is_default: boolean;
+  pokemon: NamedAPIResource;
 }
 
-// Sprites object is a nested dictionary by generation/game, each with a name_icon URL.
-// Keys vary by API (e.g., "generation-iii" → "colosseum"/"emerald"/...), so keep it flexible.
-export interface TypeSprites {
-  [generation: string]: {
-    [game: string]: {
-      name_icon: string;
-    };
-  };
+/**
+ * List Models
+ */
+export type IPokemon = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: PokemonResults[];
 }
 
-// Root: call it pokemonTypes (as requested)
-export interface IPokemonTypes {
-  damage_relations: DamageRelations;
-  game_indices: GameIndex[];
-  generation: PokemonResults;
+/**
+ * Detail Models
+ */
+export interface IPokemonDetails {
   id: number;
-  move_damage_class: PokemonResults; // e.g., { name: "special", url: ... }
-  moves: PokemonResults[];           // list of move resources
-  name: string;                     // e.g., "fire"
-  names: LocalizedName[];           // localized names
-  past_damage_relations: PastDamageRelation[];
-  pokemon: TypePokemonEntry[];      // Pokémon having this type
-  sprites: TypeSprites;             // nested sprite name_icon URLs
-}
-
-export interface IPokemonType {
-  slot: number;
-  type: {
-    name: string;
-    url: string;  
-  };
+  name: string;
+  height: number;
+  weight: number;
+  sprites: PokemonSprites;
+  types: IPokemonType[];
+  abilities: PokemonAbility[];
+  stats: PokemonStats[];
+  species: NamedAPIResource;
 }
 
 export interface PokemonSprites {
@@ -228,105 +214,42 @@ export interface PokemonStats {
 }
 
 export interface PokemonAbility {
-  ability: {
-    name: string;
-    url: string;
-  };
+  ability: NamedAPIResource;
   is_hidden: boolean;
   slot: number;
 }
 
-export interface IPokemonDetails {
-  id: number;
-  name: string;
-  height: number;
-  weight: number;
-
-  sprites: PokemonSprites;
-
-  types: IPokemonType[];
-
-  abilities: PokemonAbility[];
-
-  stats: PokemonStats[];
-
-  species: {
-    name: string;
-    url: string;
-  };
-}
-
-export type PageParam = {limit: number, offset: number};
-
-// Shared small resource
-export interface NamedAPIResource {
-  name: string;
-  url: string;
-}
-
-/** /pokemon-species/:id */
+/**
+ * Species Models
+ */
 export interface IPokemonSpecies {
   base_happiness: number;
   capture_rate: number;
-
   color: NamedAPIResource;
   egg_groups: NamedAPIResource[];
-
-  evolution_chain: {
-    url: string;
-  };
-
+  evolution_chain: { url: string; };
   evolves_from_species: NamedAPIResource | null;
-
   flavor_text_entries: FlavorTextEntry[];
-
-  form_descriptions: any[]; // always [] in many species; tighten if you use it
+  form_descriptions: any[];
   forms_switchable: boolean;
-
   gender_rate: number;
   genera: GenusEntry[];
-
   generation: NamedAPIResource;
   growth_rate: NamedAPIResource;
-
   habitat: NamedAPIResource | null;
-
   has_gender_differences: boolean;
   hatch_counter: number;
-
   id: number;
   is_baby: boolean;
   is_legendary: boolean;
   is_mythical: boolean;
-
   name: string;
   names: LocalizedName[];
-
   order: number;
-
   pal_park_encounters: PalParkEncounter[];
-
   pokedex_numbers: PokedexNumber[];
-
   shape: NamedAPIResource | null;
-
   varieties: PokemonVariety[];
-}
-
-export interface FlavorTextEntry {
-  flavor_text: string;
-  language: NamedAPIResource;
-  version: NamedAPIResource;
-}
-
-export interface GenusEntry {
-  genus: string;
-  language: NamedAPIResource;
-}
-
-export interface LocalizedName {
-  language: NamedAPIResource;
-  name: string;
 }
 
 export interface PalParkEncounter {
@@ -335,23 +258,15 @@ export interface PalParkEncounter {
   rate: number;
 }
 
-export interface PokedexNumber {
-  entry_number: number;
-  pokedex: NamedAPIResource;
-}
-
-export interface PokemonVariety {
-  is_default: boolean;
-  pokemon: NamedAPIResource;
-}
-
+/**
+ * Evolution Models
+ */
 export interface IPokemonEvolutionChain {
   id: number;
   baby_trigger_item: NamedAPIResource | null;
   chain: EvolutionChainLink;
 }
 
-/** Each node in the evolution chain */
 export interface EvolutionChainLink {
   is_baby: boolean;
   species: NamedAPIResource;
@@ -359,7 +274,6 @@ export interface EvolutionChainLink {
   evolves_to: EvolutionChainLink[];
 }
 
-/** Conditions to evolve */
 export interface EvolutionDetail {
   base_form_id: number | null;
   gender: number | null;
@@ -383,8 +297,63 @@ export interface EvolutionDetail {
   turn_upside_down: boolean;
 }
 
-export interface IEvolutionChainFunction { name: string; id: number; level: number | null; special: string | null }
+export interface IEvolutionChainFunction {
+  name: string;
+  id: number;
+  level: number | null;
+  special: string | null;
+}
 
+/**
+ * Type Models
+ */
+export interface IPokemonTypes {
+  damage_relations: DamageRelations;
+  game_indices: GameIndex[];
+  generation: NamedAPIResource;
+  id: number;
+  move_damage_class: NamedAPIResource;
+  moves: NamedAPIResource[];
+  name: string;
+  names: LocalizedName[];
+  past_damage_relations: PastDamageRelation[];
+  pokemon: TypePokemonEntry[];
+  sprites: TypeSprites;
+}
 
+export interface IPokemonType {
+  slot: number;
+  type: NamedAPIResource;
+}
 
+export interface TypePokemonEntry {
+  pokemon: NamedAPIResource;
+  slot: number;
+}
 
+export interface DamageRelations {
+  double_damage_from: NamedAPIResource[];
+  double_damage_to: NamedAPIResource[];
+  half_damage_from: NamedAPIResource[];
+  half_damage_to: NamedAPIResource[];
+  no_damage_from: NamedAPIResource[];
+  no_damage_to: NamedAPIResource[];
+}
+
+export interface PastDamageRelation {
+  damage_relations: DamageRelations;
+  generation: NamedAPIResource;
+}
+
+export interface GameIndex {
+  game_index: number;
+  generation: NamedAPIResource;
+}
+
+export interface TypeSprites {
+  [generation: string]: {
+    [game: string]: {
+      name_icon: string;
+    };
+  };
+}

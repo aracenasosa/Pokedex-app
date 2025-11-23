@@ -7,7 +7,7 @@ type NotFoundProps = {
 };
 
 export const NotFoundScreen: React.FC<NotFoundProps> = ({ id, message }) => {
-  const fallbackMessage = `The Pokémon with id "${id ?? 'unknown'}" doesn't exist.`;
+  const fallbackMessage = `The Pokémon with ${!isNaN(parseInt(id as string)) ? 'pokédex number' : 'name'} "${id ?? 'unknown'}" doesn't exist.`;
   return (
     <div className="notfound">
       <img

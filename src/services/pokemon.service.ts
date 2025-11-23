@@ -13,7 +13,7 @@ export class ApiError extends Error {
 }
 
 async function getJSON<T>(url: string, addDelay: boolean = false, delayTime: number = 3000): Promise<T> {
-  // Add 3 second delay for detail page requests (testing skeletons)
+
   if (addDelay) {
     await delay(delayTime);
   }

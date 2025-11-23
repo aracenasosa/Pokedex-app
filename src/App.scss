@@ -1,4 +1,4 @@
-@use "./shared/styles/colors.scss" as *;
+@use "./constants/styles/colors.scss" as *;
 
 /* Import list and detail styles */
 @use "./components/list/PokemonList.scss";
@@ -44,8 +44,14 @@
   padding: 32px;
   display: grid;
   place-items: center;
+  align-content: center; // Pack content in the center
   text-align: center;
   gap: 12px;
+
+  h2,
+  p {
+    margin: 0; // Remove default margins
+  }
 
   @media (max-width: 768px) {
     padding: 24px;

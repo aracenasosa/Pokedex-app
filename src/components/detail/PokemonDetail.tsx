@@ -26,9 +26,9 @@ import { Link } from "react-router";
 import CountUp from "react-countup";
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import backToHomeIcon from "../../assets/back-to-home.svg";
-import leftIcon from "../../assets/chevron_left.svg";
-import rightIcon from "../../assets/chevron_right.svg";
+import backToHomeIcon from "../../assets/icons/back-to-home.svg";
+import leftIcon from "../../assets/icons/chevron_left.svg";
+import rightIcon from "../../assets/icons/chevron_right.svg";
 import "./PokemonDetail.scss";
 
 export default function PokemonDetail() {
@@ -37,6 +37,16 @@ export default function PokemonDetail() {
   const [imageError, setImageError] = React.useState(false);
 
   const numericId = Number(id ?? 0);
+
+  // Validate if the ID is a number
+  if (isNaN(numericId) || numericId === 0) {
+    return (
+      <NotFoundScreen
+        id={id ?? "unknown"}
+        message={`The Pokémon with ID: "${id}" doesn't exist. Please use a valid Pokédex number.`}
+      />
+    );
+  }
 
   // Scroll to top whenever the Pokemon ID changes
   useEffect(() => {
@@ -84,7 +94,7 @@ export default function PokemonDetail() {
     return (
       <NotFoundScreen
         id={numericId}
-        message={is404 ? `That Pokemon with the ID: ${numericId} doesn't map to any known Pokémon.` : "Something went wrong. Please try again."}
+        message={is404 ? `That Pokemon with the Pokédex ID: ${numericId} doesn't map to any known Pokémon.` : "Something went wrong. Please try again."}
       />
     );
   }
@@ -250,7 +260,7 @@ export default function PokemonDetail() {
             )}
 
             {/* Evolution Section - Moved above Type Effectiveness */}
-            {isPendingEvolution || isPendingSpecies ? (
+            {isPendingSpecies || (evolutionChainId !== 0 && isPendingEvolution) ? (
               <div className="container__detail-card-info-four">
                 <Skeleton height={24} width={120} style={{ marginBottom: '16px' }} />
                 <div className="container__detail-card-info-four-container">
@@ -288,4 +298,3 @@ export default function PokemonDetail() {
     </main>
   );
 }
-
