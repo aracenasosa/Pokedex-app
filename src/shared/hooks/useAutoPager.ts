@@ -20,6 +20,9 @@ export function useAutoPager(active: InfiniteLike, opts: Options = {}) {
   useEffect(() => {
     if (!sentinelRef.current) return;
 
+    // Reset lock when switching queries (e.g., search -> browse)
+    lockRef.current = false;
+
     const node = sentinelRef.current;
 
     const handler = async (entries: IntersectionObserverEntry[]) => {
@@ -44,7 +47,7 @@ export function useAutoPager(active: InfiniteLike, opts: Options = {}) {
     const io = new IntersectionObserver(handler, { rootMargin });
     io.observe(node);
     return () => io.disconnect();
-  }, [active.hasNextPage, active.fetchNextPage, rootMargin, burstPages]);
+  }, [active, rootMargin, burstPages]);
 
   return { sentinelRef };
 }

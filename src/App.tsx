@@ -3,7 +3,7 @@ import "./App.scss";
 import Header from "./components/list/Header";
 import Filters from "./components/list/Filters";
 import PokemonList from "./components/list/PokemonList";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import type { InfiniteData } from "@tanstack/react-query";
 
 import type { IPokemon, PokemonResults } from "./models/pokemon.model";
@@ -13,7 +13,10 @@ import {
   usePokemonDetails,
 } from "./shared/hooks/tanstackQueries";
 import { NotFoundScreen } from "./components/common/NotFound";
+import { LoadingSpinner } from "./components/common/LoadingSpinner";
 import { API_URL } from "./shared/constants/constants";
+import { useAutoPager } from "./shared/hooks/useAutoPager";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 function App() {
   const [type, setType] = useState<string>("");
@@ -40,7 +43,7 @@ function App() {
   // ---------------- Search (kept as you had it) ----------------
   const {
     data: pokemonDetails,
-    isPending: detailPending,
+    isFetching: detailFetching,
     isError: detailError,
     error: detailErr,
   } = usePokemonDetails(search);
@@ -60,60 +63,17 @@ function App() {
 
   const resultsCount = useMemo(() => {
     if (searching) {
-      if (detailPending || notFound) return 0;
+      if (detailFetching || notFound) return 0;
       return pokemonDetails ? 1 : 0;
     }
     return flatResults.length;
-  }, [searching, detailPending, notFound, pokemonDetails, flatResults]);
+  }, [searching, detailFetching, notFound, pokemonDetails, flatResults]);
 
-  // ---------------- Infinite scroll sentinel (guard + debounce) ----------------
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const loadingRef = useRef(false); // guard to avoid duplicate fetches
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    // If an observer is already attached, disconnect it before creating a new one
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-
-    let debounceTimer: ReturnType<typeof setTimeout>;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (
-          entry.isIntersecting &&
-          !loadingRef.current &&
-          active.hasNextPage &&
-          !active.isFetchingNextPage
-        ) {
-          loadingRef.current = true; // lock while we fetch (prevents double fire)
-          active.fetchNextPage().finally(() => {
-            // small debounce before allowing the next call
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-              loadingRef.current = false;
-            }, 500);
-          });
-        }
-      },
-      { rootMargin: "400px 0px" } // start prefetching a bit before the bottom
-    );
-
-    observer.observe(sentinel);
-    observerRef.current = observer;
-
-    return () => {
-      observer.disconnect();
-      observerRef.current = null;
-      clearTimeout(debounceTimer);
-    };
-  }, [active.hasNextPage, active.isFetchingNextPage, active.fetchNextPage]);
+  // ---------------- Infinite scroll with useAutoPager (handles fast scrolling) ----------------
+  const { sentinelRef } = useAutoPager(active, {
+    rootMargin: "1200px 0px",  // prefetch earlier for fast scrolling
+    burstPages: 3,              // fetch 3 pages at once to get ahead of fast scrolls
+  });
 
   return (
     <>
@@ -126,12 +86,11 @@ function App() {
           setSearch={setSearch}
           resultsCount={resultsCount}
           totalResults={totalResults}
-          isLoading={isInitialLoading}
         />
 
         {searching ? (
-          detailPending ? (
-            <p>Loading…</p>
+          detailFetching ? (
+            <LoadingSpinner message="Loading Pokémon..." />
           ) : notFound ? (
             <NotFoundScreen id={search} />
           ) : detailError ? (
@@ -196,6 +155,7 @@ function App() {
           </>
         )}
       </main>
+      <ScrollToTop />
     </>
   );
 }

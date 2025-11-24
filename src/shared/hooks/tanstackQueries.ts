@@ -100,7 +100,6 @@ export const usePokemonDetails = (pokemon: string | number) => {
     staleTime: 60_000,           // keep fresh for 1 minute
     gcTime: 5 * 60_000 as any,   // if you're on v4, rename to cacheTime
     retry: (count, err) => (err as ApiError).status !== 404 && count < 2,
-    placeholderData: (prev) => prev, // keep last details briefly while refetching
   });
 };
 

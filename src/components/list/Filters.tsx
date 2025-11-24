@@ -10,7 +10,6 @@ interface FilterProps {
   setSearch: (search: string) => void;
   resultsCount: number;
   totalResults: number;
-  isLoading?: boolean;
 }
 
 const TYPES = [
@@ -35,7 +34,7 @@ const TYPES = [
   { key: "fairy", label: "Fairy" },
 ];
 
-const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resultsCount, totalResults, isLoading }) => {
+const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resultsCount, totalResults }) => {
   const [localSearch, setLocalSearch] = useState(search);
 
   useEffect(() => {
@@ -71,7 +70,6 @@ const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resu
               onChange={onChange}
               aria-label="Search Pokémon by name or number"
               autoComplete="off"
-              disabled={isLoading}
             />
           </div>
         </div>

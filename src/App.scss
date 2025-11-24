@@ -1,4 +1,4 @@
-@use "./constants/styles/colors.scss" as *;
+@use "./shared/constants/styles/colors.scss" as *;
 
 /* Import list and detail styles */
 @use "./components/list/PokemonList.scss";
