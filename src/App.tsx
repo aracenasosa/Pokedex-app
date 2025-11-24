@@ -3,7 +3,7 @@ import "./App.scss";
 import Header from "./components/list/Header";
 import Filters from "./components/list/Filters";
 import PokemonList from "./components/list/PokemonList";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { InfiniteData } from "@tanstack/react-query";
 
 import type { IPokemon, PokemonResults } from "./models/pokemon.model";
@@ -17,10 +17,60 @@ import { LoadingSpinner } from "./components/common/LoadingSpinner";
 import { API_URL } from "./shared/constants/constants";
 import { useAutoPager } from "./shared/hooks/useAutoPager";
 import ScrollToTop from "./components/common/ScrollToTop";
+import { Toast } from "./components/common/Toast";
+import { POKEMON_TYPES } from "./shared/constants/constants";
+
+import { useSearchParams } from "react-router";
 
 function App() {
-  const [type, setType] = useState<string>("");
-  const [search, setSearch] = useState<string>("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+
+  // Initialize state from URL params
+  const rawType = searchParams.get("type") || "";
+
+  // Validate type
+  const isValidType = POKEMON_TYPES.some(t => t.key === rawType.toLowerCase()) || rawType.toLowerCase() === "all" || rawType === "";
+
+  const initialType = isValidType
+    ? (rawType.toLowerCase() === "all" ? "" : rawType)
+    : "";
+
+  const initialSearch = searchParams.get("search") || "";
+
+  const [type, setType] = useState<string>(initialType);
+  const [search, setSearch] = useState<string>(initialSearch);
+
+  useEffect(() => {
+    if (!isValidType && rawType) {
+      setToastMessage(`Type: "${rawType}" doesn't exist`);
+      setShowToast(true);
+      // Clean URL
+      const params = new URLSearchParams(searchParams);
+      params.delete("type");
+      setSearchParams(params, { replace: true });
+    }
+  }, [isValidType, rawType, searchParams, setSearchParams]);
+
+  // Sync URL with state changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    if (search) {
+      params.set("search", search);
+    } else {
+      params.delete("search");
+    }
+
+    if (type) {
+      params.set("type", type);
+    } else {
+      params.delete("type");
+    }
+
+    setSearchParams(params, { replace: true });
+  }, [search, type, setSearchParams]);
 
   const typeKey = type.trim().toLowerCase();
   const hasType = typeKey.length > 0;
@@ -156,6 +206,11 @@ function App() {
         )}
       </main>
       <ScrollToTop />
+      <Toast
+        message={toastMessage}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </>
   );
 }

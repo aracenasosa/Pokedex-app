@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import type { IPokemonType, PokemonResults } from "../../models/pokemon.model";
 import { usePokemonDetails } from "../../shared/hooks/tanstackQueries";
@@ -66,7 +67,13 @@ const PokemonCard: React.FC<PokemonProps> = ({ pokemon }) => {
           {isPending ? (
             <Skeleton width={120} height={120} circle />
           ) : (
-            <img src={imageError ? fallbackImg : imgPokemon} alt={pokemon.name} onError={() => setImageError(true)} />
+            <motion.img
+              src={imageError ? fallbackImg : imgPokemon}
+              alt={pokemon.name}
+              onError={() => setImageError(true)}
+              layoutId={`pokemon-image-${id}`}
+              transition={{ duration: 0.3 }}
+            />
           )}
         </div>
         <div className="container__main-list-card-footer">

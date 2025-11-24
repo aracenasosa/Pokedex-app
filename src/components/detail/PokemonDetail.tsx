@@ -1,5 +1,6 @@
 // components/detail/PokemonDetail.tsx
 import React, { useEffect } from "react";
+import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router";
 import {
   usePokemonDetails,
@@ -197,10 +198,12 @@ export default function PokemonDetail() {
         {isPending ? (
           <Skeleton width={300} height={300} circle style={{ margin: '0 auto' }} />
         ) : (
-          <img
+          <motion.img
             src={mainImg}
             alt="pokemon"
             onError={() => setImageError(true)}
+            layoutId={`pokemon-image-${numericId}`}
+            transition={{ duration: 0.3 }}
           />
         )}
 

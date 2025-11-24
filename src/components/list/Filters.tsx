@@ -12,27 +12,7 @@ interface FilterProps {
   totalResults: number;
 }
 
-const TYPES = [
-  { key: "", label: "All" },
-  { key: "normal", label: "Normal" },
-  { key: "fire", label: "Fire" },
-  { key: "water", label: "Water" },
-  { key: "electric", label: "Electric" },
-  { key: "grass", label: "Grass" },
-  { key: "ice", label: "Ice" },
-  { key: "fighting", label: "Fighting" },
-  { key: "poison", label: "Poison" },
-  { key: "ground", label: "Ground" },
-  { key: "flying", label: "Flying" },
-  { key: "psychic", label: "Psychic" },
-  { key: "bug", label: "Bug" },
-  { key: "rock", label: "Rock" },
-  { key: "ghost", label: "Ghost" },
-  { key: "dragon", label: "Dragon" },
-  { key: "dark", label: "Dark" },
-  { key: "steel", label: "Steel" },
-  { key: "fairy", label: "Fairy" },
-];
+import { POKEMON_TYPES } from "../../shared/constants/constants";
 
 const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resultsCount, totalResults }) => {
   const [localSearch, setLocalSearch] = useState(search);
@@ -79,7 +59,7 @@ const Filters: React.FC<FilterProps> = ({ type, setType, search, setSearch, resu
           role="tablist"
           aria-label="Type filters"
         >
-          {TYPES.map(({ key, label }) => {
+          {POKEMON_TYPES.map(({ key, label }) => {
             const isActive = type === key;
             const cls = `container__filter-types-btn ${key || "all"} ${isActive ? "is-active" : ""
               }`;

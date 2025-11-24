@@ -45,6 +45,15 @@ $type-colors: (
   position: relative;
   min-height: 100vh;
   padding-bottom: 32px;
+  padding-top: clamp(24px, 5vh, 48px);
+
+  @media (max-width: 768px) {
+    padding-top: clamp(20px, 4vh, 40px);
+  }
+
+  @media (max-width: 480px) {
+    padding-top: clamp(16px, 3vh, 32px);
+  }
 
   /* Guarantees bottom space even when content is short */
   &::after {
@@ -108,7 +117,6 @@ $type-colors: (
     max-width: 100%;
     padding: 0 20px;
     box-sizing: border-box;
-    margin-top: clamp(24px, 5vh, 48px);
     margin-bottom: 50px;
     // background: red;
 
@@ -119,14 +127,12 @@ $type-colors: (
     @media (max-width: 768px) {
       padding: 0 16px;
       gap: 8px;
-      margin-top: clamp(20px, 4vh, 40px);
       margin-bottom: 10px;
     }
 
     @media (max-width: 480px) {
       padding: 0 12px;
       gap: 6px;
-      margin-top: clamp(16px, 3vh, 32px);
       margin-bottom: 8px;
     }
 
@@ -380,6 +386,11 @@ $type-colors: (
     flex-wrap: wrap;
     width: 100%;
 
+    button {
+      cursor: default;
+      pointer-events: none;
+    }
+
     @media (max-width: 1377px) {
       margin: 0px 0 40px 0;
     }
@@ -583,18 +594,7 @@ $type-colors: (
       }
     }
 
-    &::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      height: 1px;
-      background: rgba(0, 0, 0, 0.04);
-      border-top-left-radius: inherit;
-      border-top-right-radius: inherit;
-      pointer-events: none;
-    }
+
 
     &-info {
       text-align: center;
