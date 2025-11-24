@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createBrowserRouter, RouterProvider, useLocation, useOutlet } from 'react-router';
 import PokemonDetail from './components/detail/PokemonDetail.tsx';
 import { AnimatePresence } from 'framer-motion';
-import { PageTransition } from './components/common/PageTransition.tsx';
 import { cloneElement } from 'react';
 
 const queryClient = new QueryClient({
