@@ -47,25 +47,19 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: (
-          <PageTransition>
-            <App />
-          </PageTransition>
+          <App />
         ),
       },
       {
         path: "/pokemon/:id",
         element: (
-          <PageTransition>
-            <PokemonDetail />
-          </PageTransition>
+          <PokemonDetail />
         ),
       },
       {
         path: "*",
         element: (
-          <PageTransition>
-            <App />
-          </PageTransition>
+          <App />
         ),
       },
     ],
